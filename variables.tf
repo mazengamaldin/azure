@@ -8,3 +8,8 @@ variable "location" {
   type        = string
   default     = "eastus"
 }
+
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+}
