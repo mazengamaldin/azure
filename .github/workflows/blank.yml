@@ -1,0 +1,25 @@
+name: Azure Deployment test
+
+on:
+  push:
+    branches:
+      - main  # or your deployment branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # OR Example: Run Azure CLI commands
+    - name: Run Azure CLI commands
+      run: |
+        az group create --name mazentest --location eastus
+      
