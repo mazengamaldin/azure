@@ -13,3 +13,8 @@ variable "subscription_id" {
   description = "Azure Subscription ID"
   type        = string
 }
+
+variable "vnet_name" {
+  description = "Virtual Network Name"
+  type        = string
+}
