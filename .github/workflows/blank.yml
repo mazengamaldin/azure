@@ -1,4 +1,4 @@
-name: Azure Deployment test
+name: Terraform Deploy
 
 on:
   push:
@@ -6,21 +6,35 @@ on:
       - main  # or your deployment branch
 
 jobs:
-  deploy:
+  terraform:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout repo
       uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
 
     - name: Login to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # OR Example: Run Azure CLI commands
-    - name: Run Azure CLI commands
-      run: |
-        az group create --name mazentest --location eastus
-        az group create --name test --location eastus
-      
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Terraform Validate
+      working-directory: ./terraform
+      run: terraform validate
+
+    - name: Terraform Plan
+      working-directory: ./terraform
+      run: terraform plan -out=tfplan -input=false 
+
+    - name: Terraform Apply
+      working-directory: ./terraform
+      run: terraform apply -input=false -auto-approve tfplan

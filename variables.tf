@@ -1,20 +1,10 @@
-variable "subscription_id" {
-  description = "Azure Subscription ID"
+variable "resource_group_name" {
+  description = "The name of the resource group"
   type        = string
 }
 
-variable "client_id" {
-  description = "Azure Client ID (Service Principal)"
+variable "location" {
+  description = "Azure region for the resource group"
   type        = string
-}
-
-variable "client_secret" {
-  description = "Azure Client Secret (Service Principal)"
-  type        = string
-  sensitive   = true
-}
-
-variable "tenant_id" {
-  description = "Azure Tenant ID"
-  type        = string
+  default     = "eastus"
 }
