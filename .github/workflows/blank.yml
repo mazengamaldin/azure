@@ -22,4 +22,5 @@ jobs:
     - name: Run Azure CLI commands
       run: |
         az group create --name mazentest --location eastus
+        az group create --name test --location eastus
       
