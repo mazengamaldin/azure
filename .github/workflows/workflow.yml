@@ -56,9 +56,9 @@ jobs:
     
       run: terraform init
 
-    - name: Terraform import config
+    #- name: Terraform import config
     
-      run: terraform import azurerm_container_app.example /subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/github/providers/Microsoft.App/containerApps/example-app
+     # run: terraform import azurerm_container_app.example /subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/github/providers/Microsoft.App/containerApps/example-app
   
 
       
