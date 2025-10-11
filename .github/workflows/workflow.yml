@@ -18,6 +18,37 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
 
+    - name: Install docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+        sudo systemctl start docker
+        sudo systemctl enable docker
+    - name: Log in to Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Log in to Azure Container Registry
+      run: |
+        az acr login --name mazenregistry
+
+    - name: Pull nginx image from Docker Hub
+      run: |
+        docker pull nginx:latest
+
+    - name: Tag nginx image for ACR
+      run: |
+        docker tag nginx:latest mazenregistry.azurecr.io/nginx:latest
+
+    - name: Push nginx image to ACR
+      run: |
+        docker push mazenregistry.azurecr.io/nginx:latest
+        
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
