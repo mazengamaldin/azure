@@ -56,7 +56,7 @@ resource "azurerm_container_app" "example" {
   template {
     container {
       name   = "examplecontainerapp"
-      image  = "nginx:latest"
+      image  = "mazenregistry.azurecr.io/nginx:${var.container_image_tag}"
       cpu    = 0.25
       memory = "0.5Gi"
     }
