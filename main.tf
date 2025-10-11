@@ -1,8 +1,8 @@
 terraform {
   backend "azurerm" {
     resource_group_name  = "test5TF"
-    storage_account_name = "mazentfstate"
-    container_name       = "tfstate"
+    storage_account_name = "mazentfstate2"
+    container_name       = "tfstate1"
     key                  = "terraform.tfstate"
   }
 }
@@ -32,8 +32,8 @@ resource "azurerm_virtual_network" "mazen_vnet" {
 }
 
 
-resource "azurerm_log_analytics_workspace" "example" {
-  name                = "acctest-01"
+resource "azurerm_log_analytics_workspace" "example1" {
+  name                = "acctest-011"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   sku                 = "PerGB2018"
@@ -44,7 +44,7 @@ resource "azurerm_container_app_environment" "example1" {
   name                       = "Example-Environment1"
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.example1.id
 }
 
 resource "azurerm_container_app" "example" {
