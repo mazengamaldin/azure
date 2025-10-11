@@ -67,7 +67,7 @@ resource "azurerm_container_app" "example" {
 
 data "azurerm_container_registry" "acr" {
   name                = "mazenregistry"
-  resource_group_name = "github1"
+  resource_group_name = "test5TF"
 }
 
 resource "azurerm_role_assignment" "acr_pull" {
