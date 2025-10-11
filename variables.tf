@@ -18,3 +18,8 @@ variable "vnet_name" {
   description = "Virtual Network Name"
   type        = string
 }
+
+variable "container_image_tag" {
+  type        = string
+  description = "Tag of the container image to deploy"
+}

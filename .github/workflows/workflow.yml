@@ -1,3 +1,6 @@
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
 name: Terraform Deploy
 
 on:
@@ -18,16 +21,7 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
 
-    - name: Install docker
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-        sudo apt-get update
-        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-        sudo systemctl start docker
-        sudo systemctl enable docker
+
     - name: Log in to Azure CLI
       uses: azure/login@v1
       with:
@@ -43,12 +37,12 @@ jobs:
 
     - name: Tag nginx image for ACR
       run: |
-        docker tag nginx:latest mazenregistry.azurecr.io/nginx:latest
+        docker tag nginx:latest mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
 
     - name: Push nginx image to ACR
       run: |
-        docker push mazenregistry.azurecr.io/nginx:latest
-        
+        docker push mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
@@ -71,7 +65,7 @@ jobs:
 
     - name: Terraform Plan
       
-      run: terraform plan -out=tfplan -input=false 
+      run: terraform plan -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}" 
       
 
     - name: Terraform Apply
