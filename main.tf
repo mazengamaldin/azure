@@ -58,7 +58,7 @@ resource "azurerm_container_app" "example" {
   template {
     container {
       name   = "examplecontainerapp"
-      image  = "mazenregistry2.azurecr.io/nginx:${var.container_image_tag}"
+      image  = "mazenregistry.azurecr.io/nginx:${var.container_image_tag}"
       cpu    = 0.25
       memory = "0.5Gi"
     }
@@ -66,7 +66,7 @@ resource "azurerm_container_app" "example" {
 }
 
 data "azurerm_container_registry" "acr" {
-  name                = "mazenregistry2"
+  name                = "mazenregistry"
   resource_group_name = "github1"
 }
 
