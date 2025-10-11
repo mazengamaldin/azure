@@ -74,5 +74,5 @@ jobs:
 
     - name: Terraform Apply
       
-      run: terraform apply -input=false -auto-approve tfplan
+      run: terraform apply -lock=false -input=false -auto-approve tfplan
      
