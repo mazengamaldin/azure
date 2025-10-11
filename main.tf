@@ -52,13 +52,27 @@ resource "azurerm_container_app" "example" {
   container_app_environment_id = azurerm_container_app_environment.example1.id
   resource_group_name          = azurerm_resource_group.rg1.name
   revision_mode                = "Single"
-
+  identity {
+    type = "SystemAssigned"
+  }
   template {
     container {
       name   = "examplecontainerapp"
-      image  = "mazenregistry.azurecr.io/nginx:${var.container_image_tag}"
+      image  = "mazenregistry2.azurecr.io/nginx:${var.container_image_tag}"
       cpu    = 0.25
       memory = "0.5Gi"
     }
   }
+}
+
+data "azurerm_container_registry" "acr" {
+  name                = "mazenregistry2"
+  resource_group_name = "github1"
+}
+
+resource "azurerm_role_assignment" "acr_pull" {
+  depends_on = [azurerm_container_app.example]
+  scope                = data.azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_container_app.example.identity[0].principal_id
 }

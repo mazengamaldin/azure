@@ -29,7 +29,7 @@ jobs:
 
     - name: Log in to Azure Container Registry
       run: |
-        az acr login --name mazenregistry
+        az acr login --name mazenregistry2
 
     - name: Pull nginx image from Docker Hub
       run: |
@@ -37,11 +37,11 @@ jobs:
 
     - name: Tag nginx image for ACR
       run: |
-        docker tag nginx:latest mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+        docker tag nginx:latest mazenregistry2.azurecr.io/nginx:${{ env.IMAGE_TAG }}
 
     - name: Push nginx image to ACR
       run: |
-        docker push mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+        docker push mazenregistry2.azurecr.io/nginx:${{ env.IMAGE_TAG }}
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
