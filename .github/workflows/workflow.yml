@@ -69,10 +69,10 @@ jobs:
 
     - name: Terraform Plan
       
-      run: terraform plan -lock=false -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}" 
+      run: terraform plan  -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}" 
       
 
     - name: Terraform Apply
       
-      run: terraform apply -lock=false -input=false -auto-approve tfplan
+      run: terraform apply -input=false -auto-approve tfplan
      
