@@ -31,7 +31,6 @@ resource "azurerm_virtual_network" "mazen_vnet1" {
   
 }
 
-
 resource "azurerm_log_analytics_workspace" "example1" {
   name                = "acctest-011"
   location            = azurerm_resource_group.rg1.location
