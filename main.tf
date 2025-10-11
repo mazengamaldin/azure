@@ -18,7 +18,7 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
-resource "azurerm_virtual_network" "mazen_vnet" {
+resource "azurerm_virtual_network" "mazen_vnet1" {
     resource_group_name = var.resource_group_name
     name = var.vnet_name
     location = var.location
