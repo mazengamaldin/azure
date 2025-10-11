@@ -3,7 +3,7 @@ name: Terraform Deploy
 on:
   push:
     branches:
-      - main  # or your deployment branch
+      - main
 
 jobs:
   terraform:
@@ -22,7 +22,7 @@ jobs:
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.5.0
-        
+
     - name: Terraform Format
       run: terraform fmt -recursive
      
