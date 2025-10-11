@@ -47,6 +47,7 @@ resource "azurerm_container_app_environment" "example1" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.example1.id
 }
 
+
 resource "azurerm_container_app" "example" {
   name                         = "example-app"
   container_app_environment_id = azurerm_container_app_environment.example1.id
