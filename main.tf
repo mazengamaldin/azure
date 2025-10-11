@@ -34,23 +34,23 @@ resource "azurerm_virtual_network" "mazen_vnet1" {
 
 resource "azurerm_log_analytics_workspace" "example1" {
   name                = "acctest-011"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg1.location
+  resource_group_name = azurerm_resource_group.rg1.name
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
 
 resource "azurerm_container_app_environment" "example1" {
   name                       = "Example-Environment1"
-  location                   = azurerm_resource_group.rg.location
-  resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg1.location
+  resource_group_name        = azurerm_resource_group.rg1.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.example1.id
 }
 
 resource "azurerm_container_app" "example" {
   name                         = "example-app"
   container_app_environment_id = azurerm_container_app_environment.example1.id
-  resource_group_name          = azurerm_resource_group.rg.name
+  resource_group_name          = azurerm_resource_group.rg1.name
   revision_mode                = "Single"
 
   template {
