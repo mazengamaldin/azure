@@ -46,6 +46,17 @@ resource "azurerm_container_app_environment" "example1" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.example1.id
 }
 
+data "azurerm_container_registry" "acr" {
+  name                = "mazenregistry"
+  resource_group_name = "test5TF"
+}
+
+resource "azurerm_role_assignment" "acr_pull" {
+  depends_on = [azurerm_container_app.example]
+  scope                = data.azurerm_container_registry.acr.id
+  role_definition_name = "Owner"
+  principal_id         = azurerm_container_app.example.identity[0].principal_id
+}
 
 resource "azurerm_container_app" "example" {
   name                         = "example-app"
@@ -65,14 +76,3 @@ resource "azurerm_container_app" "example" {
   }
 }
 
-data "azurerm_container_registry" "acr" {
-  name                = "mazenregistry"
-  resource_group_name = "test5TF"
-}
-
-resource "azurerm_role_assignment" "acr_pull" {
-  depends_on = [azurerm_container_app.example]
-  scope                = data.azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_container_app.example.identity[0].principal_id
-}
