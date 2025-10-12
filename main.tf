@@ -81,3 +81,4 @@ resource "azurerm_role_assignment" "acr_pull" {
 
 }
 
+
