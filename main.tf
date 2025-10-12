@@ -39,11 +39,18 @@ resource "azurerm_log_analytics_workspace" "example1" {
   retention_in_days   = 30
 }
 
+data "azurerm_container_registry" "acr" {
+  name                = "mazenregistry"
+  resource_group_name = "test5TF"
+}
+
+
 resource "azurerm_container_app_environment" "example1" {
   name                       = "Example-Environment1"
   location                   = azurerm_resource_group.rg1.location
   resource_group_name        = azurerm_resource_group.rg1.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.example1.id
+  
 }
 
 resource "azurerm_container_app" "example" {
@@ -51,10 +58,12 @@ resource "azurerm_container_app" "example" {
   container_app_environment_id = azurerm_container_app_environment.example1.id
   resource_group_name          = azurerm_resource_group.rg1.name
   revision_mode                = "Single"
-
-  identity {
-    type = "SystemAssigned"
-  }
+  
+registry {
+  server = data.azurerm_container_registry.acr.login_server
+  username = data.azurerm_container_registry.acr.admin_username
+  password_secret_name = data.azurerm_container_registry.acr.admin_password
+}
 
   template {
     container {
@@ -66,19 +75,5 @@ resource "azurerm_container_app" "example" {
   }
 }
 
-data "azurerm_container_registry" "acr" {
-  name                = "mazenregistry"
-  resource_group_name = "test5TF"
-}
-
-resource "azurerm_role_assignment" "acr_pull" {
-  depends_on = [azurerm_container_app.example]
-
-  scope                = data.azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_container_app.example.identity.0.principal_id
-
-
-}
 
 
