@@ -78,3 +78,4 @@ resource "azurerm_role_assignment" "acr_pull" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_container_app.example.identity.0.principal_id
 }
+
