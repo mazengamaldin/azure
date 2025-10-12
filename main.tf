@@ -72,7 +72,7 @@ registry {
   template {
     container {
       name   = "examplecontainerapp"
-      image  = "mazenregistry.azurecr.io/nginx:${var.container_image_tag}mazen"
+      image  = "mazenregistry.azurecr.io/nginx:${var.container_image_tag}"
       cpu    = 0.25
       memory = "0.5Gi"
     }
