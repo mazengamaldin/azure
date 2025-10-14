@@ -40,13 +40,15 @@ jobs:
         run: terraform fmt -recursive
       - name: Terraform Init
         run: terraform init
+      - name: Terraform lock release
+        run: terraform force-unlock 79dc23e5-6434-5ca0-7800-9c0e8566e34c
       # - name: Terraform import config
       #   run: terraform import azurerm_container_app.example /subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/github/providers/Microsoft.App/containerApps/example-app
       - name: Terraform Validate
         run: terraform validate
       - name: Terraform Plan
-        run: terraform plan -lock=false -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
+        run: terraform plan  -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
       - name: Terraform Apply
-        run: terraform apply -input=false -auto-approve tfplan -lock=false
+        run: terraform apply -input=false -auto-approve tfplan 
       #- name: Terraform destroy
       #  run: terraform destroy --auto-approve
