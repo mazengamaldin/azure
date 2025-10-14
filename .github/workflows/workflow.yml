@@ -16,39 +16,55 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
       - name: Log in to Azure CLI
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Log in to Azure Container Registry
         run: |
           az acr login --name mazenregistry
+
       - name: Pull nginx image from Docker Hub
         run: |
           docker pull nginx:latest
+
       - name: Tag nginx image for ACR
         run: |
           docker tag nginx:latest mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+
       - name: Push nginx image to ACR
         run: |
           docker push mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
-      - name: Terraform Format
-        run: terraform fmt -recursive
-      - name: Terraform Init
-        run: terraform init
-      #- name: Terraform lock release
-        #run: terraform force-unlock -force 79dc23e5-6434-5ca0-7800-9c0e8566e34c
-      # - name: Terraform import config
-      #   run: terraform import azurerm_container_app.example /subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/github/providers/Microsoft.App/containerApps/example-app
-      - name: Terraform Validate
-        run: terraform validate
-      - name: Terraform Plan
-        run: terraform plan  -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
-      - name: Terraform Apply
-        run: terraform apply -input=false -auto-approve tfplan 
-      #- name: Terraform destroy
-      #  run: terraform destroy --auto-approve
+
+      - name: Deploy Image to Azure Container App
+        run: |
+          az extension add --name containerapp --yes
+          az account set --subscription f37ac0f7-354f-40be-8f3e-2e004312dceb
+          az containerapp update --name example-app --resource-group github1 --image mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+
+      # Terraform steps commented out below
+
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     terraform_version: 1.5.0
+
+      # - name: Terraform Format
+      #   run: terraform fmt -recursive
+
+      # - name: Terraform Init
+      #   run: terraform init
+
+      # - name: Terraform Validate
+      #   run: terraform validate
+
+      # - name: Terraform Plan
+      #   run: terraform plan -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
+
+      # - name: Terraform Apply
+      #   run: terraform apply -input=false -auto-approve tfplan
+
+      # - name: Terraform destroy
+      #   run: terraform destroy --auto-approve
