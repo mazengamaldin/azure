@@ -40,8 +40,8 @@ jobs:
         run: terraform fmt -recursive
       - name: Terraform Init
         run: terraform init
-      #- name: Terraform lock release
-        #run: echo yes | terraform force-unlock 79dc23e5-6434-5ca0-7800-9c0e8566e34c
+      - name: Terraform lock release
+        run: terraform force-unlock -force 79dc23e5-6434-5ca0-7800-9c0e8566e34c
       # - name: Terraform import config
       #   run: terraform import azurerm_container_app.example /subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/github/providers/Microsoft.App/containerApps/example-app
       - name: Terraform Validate
