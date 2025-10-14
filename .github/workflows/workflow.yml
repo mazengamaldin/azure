@@ -45,8 +45,8 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
       - name: Terraform Plan
-        run: terraform plan -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
+        run: terraform plan -lock=false -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
       - name: Terraform Apply
-        run: terraform apply -input=false -auto-approve tfplan
+        run: terraform apply -input=false -auto-approve tfplan -lock=false
       #- name: Terraform destroy
       #  run: terraform destroy --auto-approve
