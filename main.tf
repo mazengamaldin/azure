@@ -88,7 +88,5 @@ registry {
       memory = "0.5Gi"
     }
   }
+  
 }
-
-
-
