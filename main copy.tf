@@ -1,3 +1,7 @@
+/*
+
+
+
 terraform {
   backend "azurerm" {
     resource_group_name  = "test5TF"
@@ -44,17 +48,6 @@ data "azurerm_container_registry" "acr" {
   resource_group_name = "test5TF"
 }
 
-resource "azurerm_user_assigned_identity" "acrpullidentity" {
-  name = "acr-pull-identity"
-  resource_group_name = azurerm_resource_group.rg1.name
-  location = azurerm_resource_group.rg1.location
-}
-
-resource "azurerm_role_assignment" "acr_pull" {
-  scope = data.azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id = azurerm_user_assigned_identity.acrpullidentity.principal_id
-}
 
 resource "azurerm_container_app_environment" "example1" {
   name                       = "Example-Environment1"
@@ -69,15 +62,15 @@ resource "azurerm_container_app" "example" {
   container_app_environment_id = azurerm_container_app_environment.example1.id
   resource_group_name          = azurerm_resource_group.rg1.name
   revision_mode                = "Single"
-identity {
-  type = "UserAssigned"
-  identity_ids = [azurerm_user_assigned_identity.acrpullidentity.id]
-}
 
+  secret {
+    name = "acr-admin-password"
+    value = data.azurerm_container_registry.acr.admin_password
+  }
 registry {
   server = data.azurerm_container_registry.acr.login_server
-  identity = azurerm_user_assigned_identity.acrpullidentity.id
- 
+  username = data.azurerm_container_registry.acr.admin_username
+  password_secret_name = "acr-admin-password"
 }
 
   template {
@@ -89,6 +82,5 @@ registry {
     }
   }
 }
-
 
 
