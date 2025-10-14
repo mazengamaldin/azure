@@ -1,81 +1,52 @@
 env:
   IMAGE_TAG: ${{ github.sha }}
-
 name: Terraform Deploy
-
 on:
   push:
     branches:
       - main
-
 jobs:
   terraform:
     runs-on: ubuntu-latest
     env:
-        ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
-        ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-        ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-        ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-
+      ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+      ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
+      ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
+      ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-
-
-    - name: Log in to Azure CLI
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Log in to Azure Container Registry
-      run: |
-        az acr login --name mazenregistry
-
-    - name: Pull nginx image from Docker Hub
-      run: |
-        docker pull nginx:latest
-
-    - name: Tag nginx image for ACR
-      run: |
-        docker tag nginx:latest mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
-
-    - name: Push nginx image to ACR
-      run: |
-        docker push mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.0
-
-    - name: Terraform Format
-      run: terraform fmt -recursive
-     
-      
-    - name: Terraform Init
-    
-      run: terraform init
-
-    #- name: Terraform import config
-    
-     # run: terraform import azurerm_container_app.example /subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/github/providers/Microsoft.App/containerApps/example-app
-  
-
-      
-
-    - name: Terraform Validate
-      
-      run: terraform validate
-
-    - name: Terraform Plan
-      
-      run: terraform plan  -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}" 
-      
-
-    - #name: Terraform Apply
-      
-      #run: terraform apply -input=false -auto-approve tfplan
-
-    - name: Terrafom destory 
-      run: Terrafrom destroy --auto-approve
-     
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Log in to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name mazenregistry
+      - name: Pull nginx image from Docker Hub
+        run: |
+          docker pull nginx:latest
+      - name: Tag nginx image for ACR
+        run: |
+          docker tag nginx:latest mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+      - name: Push nginx image to ACR
+        run: |
+          docker push mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+      - name: Terraform Format
+        run: terraform fmt -recursive
+      - name: Terraform Init
+        run: terraform init
+      # - name: Terraform import config
+      #   run: terraform import azurerm_container_app.example /subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/github/providers/Microsoft.App/containerApps/example-app
+      - name: Terraform Validate
+        run: terraform validate
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
+      # - name: Terraform Apply
+      #   run: terraform apply -input=false -auto-approve tfplan
+      - name: Terraform destroy
+        run: terraform destroy --auto-approve
