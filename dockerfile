@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
 # Copy static website files into the container
-COPY ./html /usr/share/nginx/html
+COPY sample.html /usr/share/nginx/html/index.html
 
 EXPOSE 80
 
