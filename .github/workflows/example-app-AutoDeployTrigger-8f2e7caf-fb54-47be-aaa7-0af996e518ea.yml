@@ -43,6 +43,7 @@ jobs:
           registryPassword: ${{ secrets.EXAMPLEAPP_REGISTRY_PASSWORD }}
           containerAppName: example-app
           resourceGroup: github1
-          imageToBuild: mazenregistry.azurecr.io/example-app:${{ github.sha }}
+          # imageToBuild: mazenregistry.azurecr.io/example-app:${{ github.sha }}
+          imageToBuild: mazenregistry.azurecr.io/example-app:latest
           _buildArgumentsKey_: |
             _buildArgumentsValues_
