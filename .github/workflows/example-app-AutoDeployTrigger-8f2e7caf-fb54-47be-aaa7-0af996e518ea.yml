@@ -46,7 +46,3 @@ jobs:
           imageToBuild: mazenregistry.azurecr.io/example-app:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
-
-            
-
-
