@@ -104,7 +104,7 @@ data "azurerm_app_service_plan" "existing_asp" {
 resource "azurerm_app_service" "webapp_new" {
   name                = "testorini-new"
   location            = azurerm_resource_group.rg1.location
-  resource_group_name = azurerm_resource_group.rg1.name
+  resource_group_name = "test5TF"
   app_service_plan_id = data.azurerm_app_service_plan.existing_asp.id
 
   identity {
