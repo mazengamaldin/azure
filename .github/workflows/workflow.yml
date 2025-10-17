@@ -16,9 +16,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
       - name: Unlock Terraform state (ignore errors if not locked)
         run: |
-        terraform force-unlock d0fb2a45-9c5b-0311-634b-866ec79e1d25 || echo "State not locked or already unlocked."
+          terraform force-unlock d0fb2a45-9c5b-0311-634b-866ec79e1d25 || echo "State not locked or already unlocked."
 
       # - name: Log in to Azure CLI
       #   uses: azure/login@v1
@@ -44,21 +45,26 @@ jobs:
       #     az account set --subscription f37ac0f7-354f-40be-8f3e-2e004312dceb
       #     az containerapp update --name example-app --resource-group github1 --image mazenregistry.azurecr.io/example-app:${{ env.IMAGE_TAG }}
 
-      #Terraform Steps:
-
+      # Terraform Steps:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
+
       - name: Terraform Format
         run: terraform fmt -recursive
+
       - name: Terraform Init
         run: terraform init
+
       - name: Terraform Validate
         run: terraform validate
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
+
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve tfplan
+
       - name: Terraform destroy
         run: terraform destroy --auto-approve
