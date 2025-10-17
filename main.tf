@@ -123,16 +123,16 @@ resource "azurerm_linux_web_app" "webapp" {
     identity_ids = [azurerm_user_assigned_identity.acr_pull_identity.id]
   }
 
-site_config {
-
+  site_config {
+    linux_fx_version = "DOCKER|${azurerm_container_registry.acr.login_server}/example-app:latest"
+    # Do not set scm_type or port here
   }
-app_settings = {
-  "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-  "DOCKER_CUSTOM_IMAGE_NAME"             = "${azurerm_container_registry.acr.login_server}/example-app:latest"
-  "DOCKER_REGISTRY_SERVER_URL"           = "https://${azurerm_container_registry.acr.login_server}"
-  "SCM_BASIC_AUTH_ENABLED"                = "true"
-  "WEBSITES_PORT"                        = "80"
-}
+  app_settings = {
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "DOCKER_REGISTRY_SERVER_URL"           = "https://${azurerm_container_registry.acr.login_server}"
+    "SCM_BASIC_AUTH_ENABLED"                = "true"
+    "WEBSITES_PORT"                        = "80"
+  }
 
 }
 /*
