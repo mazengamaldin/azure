@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Unlock Terraform state
-        run: terraform force-unlock d0fb2a45-9c5b-0311-634b-866ec79e1d25
+      # - name: Unlock Terraform state
+      #   run: terraform force-unlock d0fb2a45-9c5b-0311-634b-866ec79e1d25
 
       # - name: Log in to Azure CLI
       #   uses: azure/login@v1
