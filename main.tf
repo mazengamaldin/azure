@@ -7,9 +7,9 @@ terraform {
   }
   required_version = ">= 1.0.0"
   backend "azurerm" {
-    resource_group_name  = "test5TF"
-    storage_account_name = "mazentfstate2"
-    container_name       = "tfstate1"
+    resource_group_name  = "backendrg"
+    storage_account_name = "mazenbackendsa"
+    container_name       = "backendcont"
     key                  = "terraform.tfstate"
   }
 }
