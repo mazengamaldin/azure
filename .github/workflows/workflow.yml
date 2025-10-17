@@ -59,7 +59,7 @@ jobs:
 
       - name: Unlock Terraform state (ignore errors if not locked)
         run: |
-          terraform force-unlock d0fb2a45-9c5b-0311-634b-866ec79e1d25 -force
+          terraform force-unlock -force d0fb2a45-9c5b-0311-634b-866ec79e1d25 
 
 
       - name: Terraform Plan
