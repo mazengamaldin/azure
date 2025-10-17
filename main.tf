@@ -90,7 +90,7 @@ resource "azurerm_container_app" "app" {
 }
 
 # App Service Plan for Linux Web App
-resource "azurerm_app_service_plan" "asp" {
+/*resource "azurerm_app_service_plan" "asp" {
   name                = "asp-test5tf"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -102,13 +102,21 @@ resource "azurerm_app_service_plan" "asp" {
     size = "B1"
   }
 }
+*/
+
+data "azurerm_app_service_plan" "existing_asp" {
+  name                = "ASP-test5TF-b991"
+  resource_group_name = "test5TF"
+}
+
+
 
 # Linux Web App
 resource "azurerm_linux_web_app" "webapp" {
   name                = "testorini"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  service_plan_id = azurerm_app_service_plan.asp.id
+  service_plan_id = data.azurerm_app_service_plan.existing_asp.id
 
   identity {
     type         = "UserAssigned"
