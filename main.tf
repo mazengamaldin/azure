@@ -113,7 +113,7 @@ data "azurerm_app_service_plan" "existing_asp" {
 
 # Linux Web App
 resource "azurerm_linux_web_app" "webapp" {
-  name                = "testorini"
+  name                = "testival"
   location            = "Central US"
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id = data.azurerm_app_service_plan.existing_asp.id
@@ -123,14 +123,17 @@ resource "azurerm_linux_web_app" "webapp" {
     identity_ids = [azurerm_user_assigned_identity.acr_pull_identity.id]
   }
 
-  site_config {
-   
+site_config {
+    linux_fx_version = "DOCKER|${azurerm_container_registry.acr.login_server}/example-app:latest"
+    scm_type         = "None"  # or "VSTSRM" if using deployment center with VSTS
   }
-
   app_settings = {
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://${azurerm_container_registry.acr.login_server}"
+    "DOCKER_REGISTRY_SERVER_URL"           = "https://${azurerm_container_registry.acr.login_server}"
+    "SCM_BASIC_AUTH_ENABLED"                = "true"
+    "WEBSITES_PORT"                        = "80"
   }
+
 }
 /*
 # Optional: ACR webhook to trigger deployment on image push
