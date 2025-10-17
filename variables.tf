@@ -23,3 +23,16 @@ variable "container_image_tag" {
   type        = string
   description = "Tag of the container image to deploy"
 }
+
+provider "azurerm" {
+  features {}
+}
+
+variable "location" {
+  default = "Canada Central"
+}
+
+variable "resource_group_name" {
+  default = "test5TF"
+}
+

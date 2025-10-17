@@ -1,4 +1,11 @@
 terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.0"
+    }
+  }
+  required_version = ">= 1.0.0"
   backend "azurerm" {
     resource_group_name  = "test5TF"
     storage_account_name = "mazentfstate2"
@@ -7,134 +14,126 @@ terraform {
   }
 }
 
-provider "azurerm" {
-  features {}
-  subscription_id = var.subscription_id
-}
 
-resource "azurerm_resource_group" "rg1" {
+# Resource Group
+resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
 }
 
-resource "azurerm_virtual_network" "mazen_vnet1" {
-  resource_group_name = var.resource_group_name
-  name                = var.vnet_name
-  location            = var.location
-  address_space       = ["10.0.0.0/16"]
-
-  subnet {
-    name           = "subnet1"
-    address_prefixes = ["10.0.1.0/24"]
-  }
-}
-
-resource "azurerm_log_analytics_workspace" "example1" {
-  name                = "acctest-011"
-  location            = azurerm_resource_group.rg1.location
-  resource_group_name = azurerm_resource_group.rg1.name
+# Log Analytics Workspace
+resource "azurerm_log_analytics_workspace" "law" {
+  name                = "example-law"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
 
-data "azurerm_container_registry" "acr" {
+# Container Registry
+resource "azurerm_container_registry" "acr" {
   name                = "mazenregistry"
-  resource_group_name  = "test5TF"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Basic"
+  admin_enabled       = false
 }
 
-# Existing User Assigned Identity
-resource "azurerm_user_assigned_identity" "acrpullidentity" {
+# User Assigned Managed Identity
+resource "azurerm_user_assigned_identity" "acr_pull_identity" {
   name                = "acr-pull-identity"
-  resource_group_name = azurerm_resource_group.rg1.name
-  location            = azurerm_resource_group.rg1.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 }
 
-resource "azurerm_role_assignment" "acr_pull" {
-  scope                = data.azurerm_container_registry.acr.id
+# Assign AcrPull role to the managed identity on ACR
+resource "azurerm_role_assignment" "acr_pull_role" {
+  scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.acrpullidentity.principal_id
+  principal_id         = azurerm_user_assigned_identity.acr_pull_identity.principal_id
 }
 
-resource "azurerm_container_app_environment" "example1" {
-  name                      = "Example-Environment1"
-  location                  = azurerm_resource_group.rg1.location
-  resource_group_name       = azurerm_resource_group.rg1.name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.example1.id
+# Container Apps Environment
+resource "azurerm_container_app_environment" "env" {
+  name                      = "example-env"
+  location                  = azurerm_resource_group.rg.location
+  resource_group_name       = azurerm_resource_group.rg.name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
 }
 
-resource "azurerm_container_app" "example" {
+# Container App
+resource "azurerm_container_app" "app" {
   name                         = "example-app"
-  container_app_environment_id = azurerm_container_app_environment.example1.id
-  resource_group_name          = azurerm_resource_group.rg1.name
-  revision_mode                = "Single"
+  resource_group_name          = azurerm_resource_group.rg.name
+  container_app_environment_id = azurerm_container_app_environment.env.id
+
+  revision_mode = "Single"
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.acrpullidentity.id]
+    identity_ids = [azurerm_user_assigned_identity.acr_pull_identity.id]
   }
 
   registry {
-    server   = data.azurerm_container_registry.acr.login_server
-    identity = azurerm_user_assigned_identity.acrpullidentity.id
+    server   = azurerm_container_registry.acr.login_server
+    identity = azurerm_user_assigned_identity.acr_pull_identity.id
   }
 
   template {
     container {
-      name   = "examplecontainerapp"
-      image  = "mazenregistry.azurecr.io/example-app:${var.container_image_tag}"
+      name   = "examplecontainer"
+      image  = "nginx:latest"
       cpu    = 0.25
       memory = "0.5Gi"
     }
   }
 }
 
-# New resources with unique names to avoid conflicts
+# App Service Plan for Linux Web App
+resource "azurerm_app_service_plan" "asp" {
+  name                = "asp-test5tf"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  kind                = "Linux"
+  reserved            = true
 
-resource "azurerm_user_assigned_identity" "acrpullidentity_new" {
-  name                = "acr-pull-identity-new"
-  resource_group_name = azurerm_resource_group.rg1.name
-  location            = azurerm_resource_group.rg1.location
+  sku {
+    tier = "Basic"
+    size = "B1"
+  }
 }
 
-data "azurerm_app_service_plan" "existing_asp" {
-  name                = "ASP-test5TF-ac8f"
-  resource_group_name = "test5TF"
-}
-
-resource "azurerm_app_service" "webapp_new" {
-  name                = "testorini-new"
-  location            = azurerm_resource_group.rg1.location
-  resource_group_name = "test5TF"
-  app_service_plan_id = data.azurerm_app_service_plan.existing_asp.id
+# Linux Web App
+resource "azurerm_linux_web_app" "webapp" {
+  name                = "testorini"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  service_plan_id = azurerm_app_service_plan.asp.id
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.acrpullidentity_new.id]
+    identity_ids = [azurerm_user_assigned_identity.acr_pull_identity.id]
   }
 
   site_config {
-    linux_fx_version = "DOCKER|${data.azurerm_container_registry.acr.login_server}/example-app:latest"
+    linux_fx_version = "DOCKER|nginx:latest"
   }
 
   app_settings = {
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://${data.azurerm_container_registry.acr.login_server}"
+    "DOCKER_REGISTRY_SERVER_URL"          = "https://${azurerm_container_registry.acr.login_server}"
   }
 }
-
-resource "azurerm_role_assignment" "acr_pull_new" {
-  principal_id         = azurerm_user_assigned_identity.acrpullidentity_new.principal_id
-  role_definition_name = "AcrPull"
-  scope                = data.azurerm_container_registry.acr.id
-}
-
-/*resource "azurerm_container_registry_webhook" "webhook_new" {
-  name                = "webapp-deploy-webhook-new"
-  resource_group_name = azurerm_resource_group.rg1.name
-  registry_name       = data.azurerm_container_registry.acr.name
-  location            = azurerm_resource_group.rg1.location
-  service_uri         = "<deployment-center-webhook-url>"  # Replace with actual webhook URL
+/*
+# Optional: ACR webhook to trigger deployment on image push
+resource "azurerm_container_registry_webhook" "webhook" {
+  name                = "webapp-deploy-webhook"
+  resource_group_name = azurerm_resource_group.rg.name
+  registry_name       = azurerm_container_registry.acr.name
+  location            = azurerm_resource_group.rg.location
+  service_uri         = "<deployment-center-webhook-url>"  # Replace with actual webhook URL after deployment
   actions             = ["push"]
   status              = "enabled"
 }
+
 */
