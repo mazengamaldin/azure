@@ -114,7 +114,7 @@ data "azurerm_app_service_plan" "existing_asp" {
 # Linux Web App
 resource "azurerm_linux_web_app" "webapp" {
   name                = "testorini"
-  location            = azurerm_resource_group.rg.location
+  location            = "Central US"
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id = data.azurerm_app_service_plan.existing_asp.id
 
