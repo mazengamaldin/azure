@@ -47,3 +47,4 @@ jobs:
           imageToBuild: mazenregistry.azurecr.io/example-app:latest
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+            
