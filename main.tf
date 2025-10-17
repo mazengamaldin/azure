@@ -116,7 +116,7 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   site_config {
-    linux_fx_version = "DOCKER|nginx:latest"
+   
   }
 
   app_settings = {
