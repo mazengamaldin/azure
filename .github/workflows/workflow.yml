@@ -1,5 +1,5 @@
 env:
-  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_TAG: latest
 name: Terraform Deploy
 on:
   push:
@@ -26,44 +26,35 @@ jobs:
         run: |
           az acr login --name mazenregistry
 
-      - name: Pull nginx image from Docker Hub
+      - name: Build Docker image
         run: |
-          docker pull nginx:latest
+          docker build -t mazenregistry.azurecr.io/example-app:${{ env.IMAGE_TAG }}.
 
-      - name: Tag nginx image for ACR
+      - name: Push Docker image to ACR
         run: |
-          docker tag nginx:latest mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+          docker push mazenregistry.azurecr.io/example-app:${{ env.IMAGE_TAG }}
 
-      - name: Push nginx image to ACR
-        run: |
-          docker push mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
-
+      # Uncomment and update the following to deploy the image to your container app if needed
       # - name: Deploy Image to Azure Container App
       #   run: |
       #     az extension add --name containerapp --yes
       #     az account set --subscription f37ac0f7-354f-40be-8f3e-2e004312dceb
-      #     az containerapp update --name example-app --resource-group github1 --image mazenregistry.azurecr.io/nginx:${{ env.IMAGE_TAG }}
+      #     az containerapp update --name example-app --resource-group github1 --image mazenregistry.azurecr.io/example-app:${{ env.IMAGE_TAG }}
 
       # Terraform steps commented out below
       # - name: Setup Terraform
       #   uses: hashicorp/setup-terraform@v2
       #   with:
       #     terraform_version: 1.5.0
-
       # - name: Terraform Format
       #   run: terraform fmt -recursive
-
       # - name: Terraform Init
       #   run: terraform init
-
       # - name: Terraform Validate
       #   run: terraform validate
-
       # - name: Terraform Plan
       #   run: terraform plan -out=tfplan -input=false -var="container_image_tag=${{ env.IMAGE_TAG }}"
-
       # - name: Terraform Apply
       #   run: terraform apply -input=false -auto-approve tfplan
-
       # - name: Terraform destroy
       #   run: terraform destroy --auto-approve
