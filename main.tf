@@ -124,7 +124,7 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   site_config {
-    linux_fx_version = "DOCKER|${azurerm_container_registry.acr.login_server}/example-app:latest"
+    linux_fx_version = "DOCKER|mazenregistry.azurecr.io/example-app:latest"
     # Do not set scm_type or port here
   }
   app_settings = {
