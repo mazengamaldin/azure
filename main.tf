@@ -96,24 +96,16 @@ resource "azurerm_user_assigned_identity" "acrpullidentity_new" {
   location            = azurerm_resource_group.rg1.location
 }
 
-resource "azurerm_app_service_plan" "asp_new" {
-  name                = "ASP-test5TF-ac8f-new"
-  location            = azurerm_resource_group.rg1.location
-  resource_group_name = azurerm_resource_group.rg1.name
-  kind                = "Linux"
-  reserved            = true
-
-  sku {
-    tier = "Basic"
-    size = "B1"
-  }
+data "azurerm_app_service_plan" "existing_asp" {
+  name                = "ASP-test5TF-ac8f"
+  resource_group_name = "test5TF"
 }
 
 resource "azurerm_app_service" "webapp_new" {
   name                = "testorini-new"
   location            = azurerm_resource_group.rg1.location
   resource_group_name = azurerm_resource_group.rg1.name
-  app_service_plan_id = azurerm_app_service_plan.asp_new.id
+  app_service_plan_id = data.azurerm_app_service_plan.existing_asp.id
 
   identity {
     type         = "UserAssigned"
