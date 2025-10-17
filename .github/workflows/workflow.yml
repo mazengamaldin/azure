@@ -57,9 +57,9 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Unlock Terraform state (ignore errors if not locked)
-        run: |
-          terraform force-unlock -force d0fb2a45-9c5b-0311-634b-866ec79e1d25 
+      # - name: Unlock Terraform state (ignore errors if not locked)
+      #   run: |
+      #     terraform force-unlock -force d0fb2a45-9c5b-0311-634b-866ec79e1d25 
 
 
       - name: Terraform Plan
