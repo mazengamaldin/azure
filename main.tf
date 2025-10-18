@@ -126,7 +126,7 @@ resource "azurerm_linux_web_app" "webapp" {
   site_config {
     always_on = true
     container_registry_use_managed_identity = true
-    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.acr_pull_identity.id
+    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.acr_pull_identity.client_id
   }
   app_settings = {
 
