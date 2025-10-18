@@ -140,6 +140,34 @@ resource "azurerm_linux_web_app" "webapp" {
 
 
 
+resource "azurerm_linux_web_app" "webappNew" {
+  name                = "testivalNew"
+  location            = "Central US"
+  resource_group_name = azurerm_resource_group.rg.name
+  service_plan_id = data.azurerm_app_service_plan.existing_asp.id
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.acr_pull_identity.id]
+  }
+
+  site_config {
+    always_on = true
+    container_registry_use_managed_identity = true
+    container_registry_managed_identity_client_id = azurerm_user_assigned_identity.acr_pull_identity.client_id
+  }
+  app_settings = {
+    "DOCKER_ENABLE_CI" = "true"
+    "DOCKER_CUSTOM_IMAGE_NAME" = "${azurerm_container_registry.acr.login_server}/example-app:latest"
+    "DOCKER_REGISTRY_SERVER_URL"           = "https://${azurerm_container_registry.acr.login_server}"
+    "SCM_BASIC_AUTH_ENABLED"                = "true"
+    "WEBSITES_PORT"                        = "80"
+  }
+
+}
+
+
+
 /*
 # Optional: ACR webhook to trigger deployment on image push
 resource "azurerm_container_registry_webhook" "webhook" {
