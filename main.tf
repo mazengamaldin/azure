@@ -171,7 +171,7 @@ resource "azurerm_linux_web_app" "webappNew" {
 
 # Optional: ACR webhook to trigger deployment on image push
 resource "azurerm_container_registry_webhook" "webhook" {
-  name                = "webapp-deploy-webhook-New"
+  name                = "TestivalWebhook"
   resource_group_name = azurerm_resource_group.rg.name
   registry_name       = azurerm_container_registry.acr.name
   location            = azurerm_resource_group.rg.location
