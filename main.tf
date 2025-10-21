@@ -179,4 +179,3 @@ resource "azurerm_container_registry_webhook" "webhook" {
   actions             = ["push"]
   status              = "enabled"
 }
-
