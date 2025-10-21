@@ -1,0 +1,45 @@
+name: Trigger auto deployment for example-app
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/example-app-AutoDeployTrigger-0d7b963d-980b-45f8-9205-5afd863e5b0f.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.EXAMPLEAPP_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          _targetLabelKey_: _targetLabel_
+          registryUrl: mazenregistry.azurecr.io
+          registryUsername: ${{ secrets.EXAMPLEAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.EXAMPLEAPP_REGISTRY_PASSWORD }}
+          containerAppName: example-app
+          resourceGroup: test5TF
+          imageToBuild: mazenregistry.azurecr.io/example-app:${{ github.sha }}
+          
+            
+
+     
+
