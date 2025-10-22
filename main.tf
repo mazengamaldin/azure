@@ -166,8 +166,13 @@ resource "azurerm_linux_web_app" "webappNew" {
 
 }
 
+output "name" {
+  value = azurerm_linux_web_app.webappNew.site_credential.0.name
+}
 
-
+output "password" {
+  value = azurerm_linux_web_app.webappNew.site_credential.0.password
+}
 
 # Optional: ACR webhook to trigger deployment on image push
 resource "azurerm_container_registry_webhook" "webhook" {
