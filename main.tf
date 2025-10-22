@@ -166,13 +166,13 @@ resource "azurerm_linux_web_app" "webappNew" {
 
 }
 
-output "name" {
-  value = azurerm_linux_web_app.webappNew.site_credential.0.name
-}
+# output "name" {
+#   value = azurerm_linux_web_app.webappNew.site_credential.0.name
+# }
 
-output "password" {
-  value = azurerm_linux_web_app.webappNew.site_credential.0.password
-}
+# output "password" {
+#   value = azurerm_linux_web_app.webappNew.site_credential.0.password
+# }
 
 # Optional: ACR webhook to trigger deployment on image push
 resource "azurerm_container_registry_webhook" "webhook" {
@@ -180,7 +180,8 @@ resource "azurerm_container_registry_webhook" "webhook" {
   resource_group_name = azurerm_resource_group.rg.name
   registry_name       = azurerm_container_registry.acr.name
   location            = azurerm_resource_group.rg.location
-  service_uri         = "https://$testivalNew:PyLR9PZcbJw2PzRDvDg6ig2faPcJoutEETMN5aWaR7ejMkJmuDsmKvwGqXgi@testivalNew.scm.azurewebsites.net/api/registry/webhook" # Replace with actual webhook URL after deployment
+  service_uri         = "https://${azurerm_linux_web_app.webappNew.site_credential.0.name}:${azurerm_linux_web_app.webappNew.site_credential.0.password}@${azurerm_linux_web_app.webappNew.name}.scm.azurewebsites.net/api/registry/webhook" # Replace with actual webhook URL after deployment
+  # service_uri         = "https://$testivalNew:PyLR9PZcbJw2PzRDvDg6ig2faPcJoutEETMN5aWaR7ejMkJmuDsmKvwGqXgi@testivalNew.scm.azurewebsites.net/api/registry/webhook" # Replace with actual webhook URL after deployment
   actions             = ["push"]
   status              = "enabled"
 }
