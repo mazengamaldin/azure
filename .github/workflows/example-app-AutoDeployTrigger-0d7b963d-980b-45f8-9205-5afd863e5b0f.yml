@@ -37,7 +37,7 @@ jobs:
           registryPassword: ${{ secrets.EXAMPLEAPP_REGISTRY_PASSWORD }}
           containerAppName: example-app
           resourceGroup: test5TF
-          imageToBuild: mazenregistry.azurecr.io/New:latest
+          imageToBuild: mazenregistry.azurecr.io/new:latest
           
             
 
