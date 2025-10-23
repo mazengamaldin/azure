@@ -61,9 +61,38 @@ resource "azurerm_container_app_environment" "env" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
 }
 
-# Container App
+# Container App 1 
 resource "azurerm_container_app" "app" {
   name                         = "example-app"
+  resource_group_name          = azurerm_resource_group.rg.name
+  container_app_environment_id = azurerm_container_app_environment.env.id
+
+  revision_mode = "Single"
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.acr_pull_identity.id]
+  }
+
+  registry {
+    server   = azurerm_container_registry.acr.login_server
+    identity = azurerm_user_assigned_identity.acr_pull_identity.id
+  }
+
+  template {
+    container {
+      name   = "examplecontainer"
+      image  = "nginx:latest"
+      cpu    = 0.25
+      memory = "0.5Gi"
+    }
+  }
+}
+
+
+#COntainer app 2
+resource "azurerm_container_app" "appnew" {
+  name                         = "example-appnew"
   resource_group_name          = azurerm_resource_group.rg.name
   container_app_environment_id = azurerm_container_app_environment.env.id
 
