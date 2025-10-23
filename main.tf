@@ -207,3 +207,24 @@ resource "azurerm_container_registry_webhook" "webhook" {
   actions             = ["push"]
   status              = "enabled"
 }
+
+
+resource "azurerm_monitor_metric_alert" "app_insights_failed_locations_alert" {
+  name                = "AppInsights-FailedLocations-Alert"
+  resource_group_name = var.resource_group_name  # Replace with your resource group name
+  scopes              = ["/subscriptions/f37ac0f7-354f-40be-8f3e-2e004312dceb/resourceGroups/test5TF/providers/microsoft.insights/components/tsster"]  # Replace with your Application Insights resource ID
+  description         = "Alert when failed availability test locations are greater or equal to 2"
+  severity            = 2
+  frequency           = "PT1M"  # Evaluate every 1 minute
+  window_size         = "PT5M"  # Over last 5 minutes
+
+  criteria {
+    metric_namespace = "microsoft.insights/components"
+    metric_name      = "availabilityResults/FailedLocations"
+    aggregation      = "Total"
+    operator         = "GreaterThanOrEqual"
+    threshold        = 2
+  }
+
+  
+}
