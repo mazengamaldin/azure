@@ -158,6 +158,7 @@ resource "azurerm_linux_web_app" "webapp" {
     container_registry_managed_identity_client_id = azurerm_user_assigned_identity.acr_pull_identity.client_id
   }
   app_settings = {
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = "4c3a36ba-7ea5-4d3a-aba7-68c5b33014bb"
     "DOCKER_ENABLE_CI" = "true"
     "DOCKER_CUSTOM_IMAGE_NAME" = "${azurerm_container_registry.acr.login_server}/example-app:latest"
     "DOCKER_REGISTRY_SERVER_URL"           = "https://${azurerm_container_registry.acr.login_server}"
