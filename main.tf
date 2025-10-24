@@ -159,6 +159,7 @@ resource "azurerm_linux_web_app" "webapp" {
   }
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = "4c3a36ba-7ea5-4d3a-aba7-68c5b33014bb"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = "InstrumentationKey=4c3a36ba-7ea5-4d3a-aba7-68c5b33014bb;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=5a239b32-f52e-457a-930f-482c59c27591"
     "DOCKER_ENABLE_CI" = "true"
     "DOCKER_CUSTOM_IMAGE_NAME" = "${azurerm_container_registry.acr.login_server}/example-app:latest"
     "DOCKER_REGISTRY_SERVER_URL"           = "https://${azurerm_container_registry.acr.login_server}"
